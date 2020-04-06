@@ -6,8 +6,8 @@
 :root {
     --light-cell: lightgoldenrodyellow;
     --dark-cell: darkslategray;
-    --img-wood-dark: url("../assets/images/dark_wood.jpeg");
-    --img-wood-light: url("../assets/images/light_wood.jpg");
+    --img-wood-dark: url("../assets/svg/wood-dark.svg");
+    --img-wood-light: url("../assets/svg/wood-light.svg");
     --img-wood-white: url("../assets/images/white_wood.png");
 }
 
