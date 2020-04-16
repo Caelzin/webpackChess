@@ -1,28 +1,25 @@
-function add(event) {
+function add(event, grid, jsonGrid) {
     let target = event.target.closest('.cell');
-    if (!target || target.className !== 'cell') {
+
+    if (!grid.hasPiece(target, jsonGrid)) {
         return;
     }
 
-    let cellID = deck.getCellPosition(target);
+    let jsonEntry = grid.hasPiece(target, jsonGrid);
 
-    if (map.has(cellID)) {
-        let links = map.get(cellID).moveAbility(map, deck, step);
-        for (let value of links) {
-            value.style.background = 'cyan';
-        }
+    for (let value of jsonEntry.moves) {
+        grid.get(value).style.background = 'cyan';
     }
 
+
     target.onmouseout = function () {
-        remove();
+        remove(grid);
     }
 }
 
-function remove() {
-    let cells = document.getElementsByClassName('cell'); //TODO document -> parent
-
-    for (let i = 0; i < cells.length; i++) {
-        cells[i].style.background = '';
+function remove(grid) {
+    for (let i of grid.values()) {
+        i.style.background = '';
     }
 }
 

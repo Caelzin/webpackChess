@@ -1,18 +1,16 @@
-import Pos from './workWithPosition'
-
 //в будущем замена на парс html-строки. Или превращение в dom-узел. Или в смене способа вставки (См. дневник 06.04)
-import svgPawnBlack from '@/assets/svg/pawn_black.svg'
-import svgPawnWhite from '@/assets/svg/pawn_white.svg'
-import svgRookBlack from '@/assets/svg/rook_black.svg'
-import svgRookWhite from '@/assets/svg/rook_white.svg'
-import svgBishopBlack from '@/assets/svg/bishop_black.svg'
-import svgBishopWhite from '@/assets/svg/bishop_white.svg'
-import svgQueenBlack from '@/assets/svg/queen_black.svg'
-import svgQueenWhite from '@/assets/svg/queen_white.svg'
-import svgKingBlack from '@/assets/svg/king_black.svg'
-import svgKingWhite from '@/assets/svg/king_white.svg'
-import svgKnightBlack from '@/assets/svg/knight_black.svg'
-import svgKnightWhite from '@/assets/svg/knight_white.svg'
+import svgPawnBlack from '@src/assets/svg/pieces/pawn_black.svg'
+import svgPawnWhite from '@src/assets/svg/pieces/pawn_white.svg'
+import svgRookBlack from '@src/assets/svg/pieces/rook_black.svg'
+import svgRookWhite from '@src/assets/svg/pieces/rook_white.svg'
+import svgBishopBlack from '@src/assets/svg/pieces/bishop_black.svg'
+import svgBishopWhite from '@src/assets/svg/pieces/bishop_white.svg'
+import svgQueenBlack from '@src/assets/svg/pieces/queen_black.svg'
+import svgQueenWhite from '@src/assets/svg/pieces/queen_white.svg'
+import svgKingBlack from '@src/assets/svg/pieces/king_black.svg'
+import svgKingWhite from '@src/assets/svg/pieces/king_white.svg'
+import svgKnightBlack from '@src/assets/svg/pieces/knight_black.svg'
+import svgKnightWhite from '@src/assets/svg/pieces/knight_white.svg'
 
 export default class Grid extends Map { //TODO экспорить класс или экземпляр класса на серве?
     constructor(parent) {
@@ -32,7 +30,7 @@ export default class Grid extends Map { //TODO экспорить класс и�
                 return entry[0];
             }
         }
-        return false;
+        return null;
     }
 
     fill() {
@@ -41,7 +39,9 @@ export default class Grid extends Map { //TODO экспорить класс и�
         for (let i = 0; i < this._size; i++) {
             let line = columns[i + 1].childNodes;
             for (let j = 0; j < this._size; j++) {
-                this.set(Pos.oneDim(i, this._size - j - 1), line[j + 1]);
+                this.set((this._size - j - 1) * this._size + i, line[j + 1]);
+                //Сложная формула просто переворачивает по вертикали отсчет так, чтобы шел снизу вверх
+                //т.е. позиция {0, 0} В левом нижнем углу, а потом приводит к одномассивной координате
             }
         }
     }
@@ -89,52 +89,62 @@ export default class Grid extends Map { //TODO экспорить класс и�
         return div;
     }
 
-    draw(map) {
+    draw(jsonGrid) {
         for (let entry of this) {
             entry[1].innerHTML = '';
-            let type, position = entry[0];
-            if (map.has(position)) {
-                //TODO переделать свитч
-                type = map.get(position).type;
-                let color = map.get(position).color;
-                switch (type) {
-                    //см. дневник от 06.04
-                    case 'pawn':
-                        this.get(position).innerHTML = color === 'white' ?
-                            this.get(position).innerHTML = svgPawnWhite :
-                            this.get(position).innerHTML = svgPawnBlack;
-                        break;
-                    case 'knight':
-                        this.get(position).innerHTML = color === 'white' ?
-                            this.get(position).innerHTML = svgKnightWhite :
-                            this.get(position).innerHTML = svgKnightBlack;
-                        break;
-                    case 'bishop':
-                        this.get(position).innerHTML = color === 'white' ?
-                            this.get(position).innerHTML = svgBishopWhite :
-                            this.get(position).innerHTML = svgBishopBlack;
-                        break;
-                    case 'rook':
-                        this.get(position).innerHTML = color === 'white' ?
-                            this.get(position).innerHTML = svgRookWhite :
-                            this.get(position).innerHTML = svgRookBlack;
-                        break;
-                    case 'queen':
-                        this.get(position).innerHTML = color === 'white' ?
-                            this.get(position).innerHTML = svgQueenWhite :
-                            this.get(position).innerHTML = svgQueenBlack;
-                        break;
-                    case 'king':
-                        this.get(position).innerHTML = color === 'white' ?
-                            this.get(position).innerHTML = svgKingWhite :
-                            this.get(position).innerHTML = svgKingBlack;
-                        break;
-                    default:
-                    //TODO кинуть ошибку
-                }
-
+        }
+        for (let piece of jsonGrid) {
+            switch (piece.type) {
+                case 'pawn':
+                    this.get(piece.position).innerHTML = piece.color === 'white' ?
+                        this.get(piece.position).innerHTML = svgPawnWhite :
+                        this.get(piece.position).innerHTML = svgPawnBlack;
+                    break;
+                case 'knight':
+                    this.get(piece.position).innerHTML = piece.color === 'white' ?
+                        this.get(piece.position).innerHTML = svgKnightWhite :
+                        this.get(piece.position).innerHTML = svgKnightBlack;
+                    break;
+                case 'bishop':
+                    this.get(piece.position).innerHTML = piece.color === 'white' ?
+                        this.get(piece.position).innerHTML = svgBishopWhite :
+                        this.get(piece.position).innerHTML = svgBishopBlack;
+                    break;
+                case 'rook':
+                    this.get(piece.position).innerHTML = piece.color === 'white' ?
+                        this.get(piece.position).innerHTML = svgRookWhite :
+                        this.get(piece.position).innerHTML = svgRookBlack;
+                    break;
+                case 'queen':
+                    this.get(piece.position).innerHTML = piece.color === 'white' ?
+                        this.get(piece.position).innerHTML = svgQueenWhite :
+                        this.get(piece.position).innerHTML = svgQueenBlack;
+                    break;
+                case 'king':
+                    this.get(piece.position).innerHTML = piece.color === 'white' ?
+                        this.get(piece.position).innerHTML = svgKingWhite :
+                        this.get(piece.position).innerHTML = svgKingBlack;
+                    break;
+                default:
+                //TODO кинуть ошибку
             }
         }
     }
 
+    /**
+     *
+     * @param target - ссылка на div.cell
+     * @param jsonGrid
+     * @returns {boolean|any} - Возвращает объект из массива jsonGrid, если фигура имеется
+     */
+    hasPiece (target, jsonGrid) {
+        if (!target || target.className !== 'cell') {
+            return false;
+        }
+        for (let i of jsonGrid) {
+            if (i.position === this.getCellPosition(target)) {
+                return i;
+            }
+        }
+    }
 };

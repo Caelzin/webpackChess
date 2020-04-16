@@ -6,12 +6,9 @@
 :root {
     --light-cell: lightgoldenrodyellow;
     --dark-cell: darkslategray;
-    --img-wood-dark: url("../assets/svg/wood-dark.svg");
-    --img-wood-light: url("../assets/svg/wood-light.svg");
-    --img-wood-white: url("../assets/images/white_wood.png");
+    --img-wood-dark: url("../assets/svg/background/wood_dark.svg");
+    --img-wood-light: url("../assets/svg/background/wood_light.svg");
 }
-
-
 
 @media (orientation: landscape) {
     :root {
@@ -35,7 +32,7 @@
 }
 
 #deck {
-    background: var(--img-wood-white) center;
+    background: var(--img-wood-light) center;
     display: flex;
     justify-content: stretch;
     margin: 5%;
@@ -81,14 +78,12 @@
 
 .cell {
     background: white var(--img-wood-light) center;
-    background: var(--light-cell);
     flex-grow: 1;
 }
 
 .column:nth-child(even) > .cell:nth-child(odd),
 .column:nth-child(odd) > .cell:nth-child(even) {
-     background: black var(--img-wood-dark);
-    background: var(--dark-cell);
+     background: black var(--img-wood-dark) ;
 }
 
 .svg-piece {
@@ -116,6 +111,7 @@
     display: flex;
     justify-content: space-around;
 }
+
 #movable_cell {
     position: absolute;
     background-color: transparent;

@@ -5,6 +5,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const TerserWebpackPlugin = require('terser-webpack-plugin');
 const OptimizeCssAssetsWebpackPlugin = require('optimize-css-assets-webpack-plugin');
 
+const filename = ext => isDev ? `[name].${ext}` : `[name].[hash].${ext}`;
 const isDev = process.env.NODE_ENV === 'development';
 const optimization = () => {
     const config = {
@@ -23,30 +24,30 @@ const optimization = () => {
 
 module.exports = {
     mode: 'development',
-    context: path.resolve(__dirname, 'src'),
+    resolve: {
+        alias: {
+            '@src': path.resolve(__dirname, 'src')
+        },
+    },
+    // context: path.resolve(__dirname, 'src'),
     entry: {
-        main: './/index.js'
+        main: './src/index.js',
     },
     output: {
-        filename: '[name].[hash].js',
+        filename: filename('js'),
         path: path.resolve(__dirname, 'dist')
     },
     optimization: optimization(),
-    resolve: {
-        alias: {
-            '@': path.resolve(__dirname, './src'),
-        },
-    },
     plugins: [
         new HTMMWebpackPlugin({
-            template: './index.html',
+            template: './src/index.html',
             minify: {
                 collapseWhitespace: !isDev
             }
         }),
         new CleanWebpackPlugin(),
         new MiniCssExtractPlugin({
-            filename: '[name].[hash].css'
+            filename: filename('css')
         })
     ],
     module: {
@@ -56,15 +57,27 @@ module.exports = {
                 use: [MiniCssExtractPlugin.loader, 'css-loader']
             },
             {
-              test: /\.svg$/,
-              use: [
-                  'svg-inline-loader'
-              ]
+                test: /pieces[\S]*\.svg$/,
+                use: [
+                    'svg-inline-loader'
+                ]
             },
             {
-                test: /\.(png|jpg|jpeg|gif)$/,
-                loader: 'file-loader'
+                test: /background[\S]*\.svg$/,
+                use: [
+                    'svg-url-loader'
+                ]
+            },
+            {
+                test: /\.(png|jpe?g|gif)$/,
+                loader: 'file-loader',
+                options: {
+                    name: filename('[ext]')
+                }
             }
         ]
+    },
+    node: {
+        fs: 'empty'
     }
 };
