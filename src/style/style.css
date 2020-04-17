@@ -37,7 +37,6 @@
     justify-content: stretch;
     margin: 5%;
     flex-basis: 100%;
-
 }
 
 .column {
@@ -117,10 +116,3 @@
     background-color: transparent;
     z-index: 500; /*mazZIndex?*/
 }
-
-
-
-
-/*TODO сделать границы cell*/
-/*TODO сделать обводку фигур*/
-

@@ -4,7 +4,7 @@ const Base = require('./base')
 module.exports = class Pawn extends Base {
     constructor(color, position) {
         super(color, position);
-        this._type = 'pawn'; //TODO пока не используются
+        this._type = 'pawn';
         if (color === 'white') {
             this._pieceDirection = 1;
         } else {

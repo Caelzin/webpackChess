@@ -6,9 +6,8 @@ const Queen = require('./pieces/queen');
 const Rook = require('./pieces/rook');
 
 
-//TODO переименовать класс и файл
-
 module.exports = class PieceMap extends Map {
+
     constructor() {
         super();
         this._starterPack = [
@@ -96,20 +95,6 @@ module.exports = class PieceMap extends Map {
         }
     }
 
-    JSONify(step) {
-        let piecesArray = new Array();
-        for (let piece of this.values()) {
-            let object = {
-                type: piece.type,
-                color: piece.color,
-                position: piece.position,
-                moves: piece.moveAbilityArray(this, step)
-            }
-            piecesArray.push(object);
-
-        }
-        return JSON.stringify(piecesArray);
-    }
 
     findKingPosition(color) {
         if (!color) {
@@ -136,7 +121,7 @@ module.exports = class PieceMap extends Map {
             let newMap = new PieceMap();
             newMap.fillNewMap(map);
 
-            newMap.movePiece(before, after, step);
+            newMap.makeMove(before, after, step);
 
             let tempPiece = newMap.get(i);
             if (tempPiece.canMove(newMap.findKingPosition(target.color), newMap, step)) {
@@ -178,14 +163,42 @@ module.exports = class PieceMap extends Map {
             case 'king':
                 piece = new King(color, position);
                 break;
-            default:
-            //TODO кинуть ошибку
         }
 
         return piece;
     }
 
-    movePiece(before, after, step) { //TODO передавать степ, правильно? или глобально?
+    toJSON() {
+        let array = [];
+        for (let piece of this.values()) {
+            let object = {
+                type: piece.type,
+                color: piece.color,
+                position: piece.position,
+                moves: piece.moveAbilityArray(this, 0) //вызывается при начале игры, => ход = 0
+            }
+            array.push(object);
+        }
+        return JSON.stringify(array);
+    }
+
+    replaceWith({before: before, after: after, transformType: newType}) {
+        if (this.has(before)) {
+            let moves = this.get(before).moveAbilityArray(this, 0);
+            for (let i of moves) {
+                if (i === after) {
+                    if (newType) {
+                        this.transformPawn(before, newType);
+                    }
+                    this.makeMove(before, after);
+                    return this.toJSON();
+                }
+            }
+        }
+        return false;
+    }
+
+    makeMove(before, after, step) {
         let piece = this.get(before);
         this.delete(after);
         this.delete(before);
@@ -194,9 +207,33 @@ module.exports = class PieceMap extends Map {
         piece.firstStep = step;
     }
 
+    isMoveAvailable(data) {
+        let jsonGrid = this.toJSON();
+        jsonGrid = JSON.parse(jsonGrid);
+        if (jsonGrid) {
+            for (let i = 0; i < jsonGrid.length; i++) {
+                if (jsonGrid[i].position === data.before) {
+                    for (let j = 0; j < jsonGrid[i].moves.length; j++) {
+                        if (jsonGrid[i].moves[j] === data.after) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
 
-    transformPawn(type, position, color) {
-        this.set(position, this.createPiece({type, position, color}));
+    /**
+     * Создает фигуру на ТОМ ЖЕ месте
+     * @param position
+     * @param targetType
+     */
+    transformPawn(position, targetType) {
+        let color = this.get(position).color;
+        this.delete(position);
+        let newPiece = this.createPiece({type: targetType, position: position, color: color});
+        this.set(position, newPiece);
     }
 
     /**

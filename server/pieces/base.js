@@ -64,6 +64,7 @@ module.exports = class Base {
 
     doMove(after, map, step) {
         //TODO сохранение убитого для отображения сбоку
+        //TODO стоп, а я ща использую функцию вообще?
         map.movePiece(this.position, after, step);
     }
 

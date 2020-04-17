@@ -6,7 +6,7 @@ module.exports = function movePiece(event, grid, jsonGrid) {
     if (!grid.hasPiece(target, jsonGrid)) {
         return;
     }
-    removeEventListener('mouseover', (event) => highlight.add(event, grid, jsonGrid));
+    //removeEventListener('mouseover', (event) => highlight.add(event, grid, jsonGrid));
 
     let clone = target.cloneNode(true);
     clone.id = 'movable_cell';
@@ -22,7 +22,7 @@ module.exports = function movePiece(event, grid, jsonGrid) {
     document.addEventListener('mouseup', function mouseUp(event) {
         document.removeEventListener('mousemove', onMouseMove);
         target.onmouseup = null;
-        parent.addEventListener('mouseover', (event) => highlight.add(event, grid, jsonGrid));
+        parent.onmouseover = (event) => highlight.add(event, grid, jsonGrid)
         document.body.removeChild(event.target.closest('#movable_cell'));
         let after = document.elementFromPoint(event.clientX, event.clientY);
         after = after.closest('.cell');
@@ -37,16 +37,24 @@ module.exports = function movePiece(event, grid, jsonGrid) {
                     before: before.position,
                     after: afterPosition
                 }
-                fetch('/post/move',
+                fetch('http://localhost:8080/post/move',
                     {
                         method: 'POST',
-                        headers: {'Content-Type': 'application/json'},
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        },
                         body: JSON.stringify(data)
                     })
-                    .then(res => {
-                        jsonGrid = res;
-                        console.log(jsonGrid.json());
+                async function getter () {
+                    let response = await fetch('http://localhost:8080/grid', {
+                        method: 'GET'
                     });
+                    jsonGrid = await response.json();
+                    grid.draw(jsonGrid);
+                    parent.onmouseover = (event) => highlight.add(event, grid, jsonGrid)
+                }
+                getter();
                 break;
             }
         }

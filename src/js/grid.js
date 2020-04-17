@@ -1,4 +1,4 @@
-//в будущем замена на парс html-строки. Или превращение в dom-узел. Или в смене способа вставки (См. дневник 06.04)
+//TODO в будущем замена на парс html-строки. Или превращение в dom-узел. Или в смене способа вставки (См. дневник 06.04)
 import svgPawnBlack from '@src/assets/svg/pieces/pawn_black.svg'
 import svgPawnWhite from '@src/assets/svg/pieces/pawn_white.svg'
 import svgRookBlack from '@src/assets/svg/pieces/rook_black.svg'
@@ -12,7 +12,7 @@ import svgKingWhite from '@src/assets/svg/pieces/king_white.svg'
 import svgKnightBlack from '@src/assets/svg/pieces/knight_black.svg'
 import svgKnightWhite from '@src/assets/svg/pieces/knight_white.svg'
 
-export default class Grid extends Map { //TODO экспорить класс или экземпляр класса на серве?
+export default class Grid extends Map {
     constructor(parent) {
         super();
         this._hvalues = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
@@ -26,7 +26,7 @@ export default class Grid extends Map { //TODO экспорить класс и�
 
     getCellPosition(link) {
         for (let entry of this) {
-            if (entry[1] === link) { //TODO есть ли .value & .key? [x] не интуитивен
+            if (entry[1] === link) {
                 return entry[0];
             }
         }
