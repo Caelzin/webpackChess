@@ -1,15 +1,16 @@
-const highlight = require('./highlight');
+import * as highlight from './highlight';
+import {getter, poster} from '@src/js/fetcher';
+import chooseTarget from '@src/js/chooseTarget';
 
-module.exports = function movePiece(event, grid, jsonGrid) {
+export default function movePiece(event, grid, jsonGrid) {
     let target = event.target.closest('.cell');
 
     if (!grid.hasPiece(target, jsonGrid)) {
         return;
     }
-    //removeEventListener('mouseover', (event) => highlight.add(event, grid, jsonGrid));
-
     let clone = target.cloneNode(true);
-    clone.id = 'movable_cell';
+    clone.id = 'movable-cell';
+    clone.classList = ''
     clone.ondragstart = function () {
         return false;
     };
@@ -23,52 +24,38 @@ module.exports = function movePiece(event, grid, jsonGrid) {
         document.removeEventListener('mousemove', onMouseMove);
         target.onmouseup = null;
         parent.onmouseover = (event) => highlight.add(event, grid, jsonGrid)
-        document.body.removeChild(event.target.closest('#movable_cell'));
+        document.body.removeChild(clone);
         let after = document.elementFromPoint(event.clientX, event.clientY);
         after = after.closest('.cell');
         let afterPosition = grid.getCellPosition(after);
-
 
         let before = grid.hasPiece(target,  jsonGrid);
         for (let j of before.moves) {
             if (j === afterPosition) {
 
+                let targetType = null;
+                if (before.type === 'pawn' && (afterPosition >=55 || afterPosition >8)) {
+                    targetType = chooseTarget();
+                }
+
                 let data = {
                     before: before.position,
-                    after: afterPosition
+                    after: afterPosition,
+                    targetType: targetType,
                 }
-                fetch('http://localhost:8080/post/move',
-                    {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json'
-                        },
-                        body: JSON.stringify(data)
-                    })
-                async function getter () {
-                    let response = await fetch('http://localhost:8080/grid', {
-                        method: 'GET'
-                    });
-                    jsonGrid = await response.json();
-                    grid.draw(jsonGrid);
-                    parent.onmouseover = (event) => highlight.add(event, grid, jsonGrid)
-                }
-                getter();
+                poster(data);
+                getter(grid);
                 break;
             }
         }
-
         this.removeEventListener('mouseup', mouseUp);
     })
-
-
 
 
     function moveAt(pageX, pageY) {
         clone.style.left = pageX - clone.offsetWidth / 2 + 'px';
         clone.style.top = pageY - clone.offsetHeight / 2 + 'px';
-    } //разобраться с функцией в функции
+    }
 
     function onMouseMove(event) {
         moveAt(event.pageX, event.pageY);

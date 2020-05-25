@@ -111,7 +111,7 @@
     justify-content: space-around;
 }
 
-#movable_cell {
+#movable-cell {
     position: absolute;
     background-color: transparent;
     z-index: 500; /*mazZIndex?*/

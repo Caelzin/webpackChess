@@ -146,5 +146,6 @@ export default class Grid extends Map {
                 return i;
             }
         }
+        return false;
     }
 };

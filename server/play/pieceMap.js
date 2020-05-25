@@ -121,13 +121,17 @@ module.exports = class PieceMap extends Map {
             let newMap = new PieceMap();
             newMap.fillNewMap(map);
 
-            newMap.makeMove(before, after, step);
+            let newPiece = newMap.get(before);
+            newPiece.doMove(after, newMap, step);
 
             let tempPiece = newMap.get(i);
-            if (tempPiece.canMove(newMap.findKingPosition(target.color), newMap, step)) {
+            if (tempPiece && tempPiece.canMove(newMap.findKingPosition(target.color), newMap, step)) {
                 return false;
             }
-            newMap.set(tempPiece.position, tempPiece);
+            if (tempPiece) {
+                newMap.set(tempPiece.position, tempPiece);
+            }
+
         }
         return true;
     }
@@ -168,47 +172,41 @@ module.exports = class PieceMap extends Map {
         return piece;
     }
 
-    toJSON() {
-        let array = [];
+    /**
+     *
+     * @param {number}step
+     * @return {string}
+     */
+    toJSON(step) {
+        let pieces = [];
         for (let piece of this.values()) {
             let object = {
                 type: piece.type,
                 color: piece.color,
                 position: piece.position,
-                moves: piece.moveAbilityArray(this, 0) //вызывается при начале игры, => ход = 0
+                moves: piece.moveAbilityArray(this, step)
             }
-            array.push(object);
+            if (step % 2 === 1 && piece.color === 'white'
+                || step % 2 === 0 && piece.color === 'black') {
+                object.moves = [  ];
+            } //сервер отправляет подсветку ходов текущего человека. TODO еще и фильтр по человеку
+
+            pieces.push(object);
         }
-        return JSON.stringify(array);
+
+        return JSON.stringify(pieces);
     }
 
-    replaceWith({before: before, after: after, transformType: newType}) {
-        if (this.has(before)) {
-            let moves = this.get(before).moveAbilityArray(this, 0);
-            for (let i of moves) {
-                if (i === after) {
-                    if (newType) {
-                        this.transformPawn(before, newType);
-                    }
-                    this.makeMove(before, after);
-                    return this.toJSON();
-                }
-            }
-        }
-        return false;
-    }
 
-    makeMove(before, after, step) {
+    makeMove(before, after, map, step, transformType) {
+
         let piece = this.get(before);
-        this.delete(after);
-        this.delete(before);
-        this.set(after, piece);
-        piece.position = after;
-        piece.firstStep = step;
+        piece.doMove(after, map, step, transformType);
+
     }
 
-    isMoveAvailable(data) {
-        let jsonGrid = this.toJSON();
+    isMoveAvailable(data, step) {
+        let jsonGrid = this.toJSON(step);
         jsonGrid = JSON.parse(jsonGrid);
         if (jsonGrid) {
             for (let i = 0; i < jsonGrid.length; i++) {
@@ -224,17 +222,6 @@ module.exports = class PieceMap extends Map {
         return false;
     }
 
-    /**
-     * Создает фигуру на ТОМ ЖЕ месте
-     * @param position
-     * @param targetType
-     */
-    transformPawn(position, targetType) {
-        let color = this.get(position).color;
-        this.delete(position);
-        let newPiece = this.createPiece({type: targetType, position: position, color: color});
-        this.set(position, newPiece);
-    }
 
     /**
      * Возвращает набор значений, подходящих по цвету
@@ -244,7 +231,7 @@ module.exports = class PieceMap extends Map {
     fromColor(color) {
         let newMap = new Map();
         for (let entry of this.values()) {
-            if (entry.color === color) {
+            if (entry && entry.color === color) {
                 newMap.set(entry.position, entry);
             }
         }

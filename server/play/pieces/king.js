@@ -21,7 +21,7 @@ module.exports = class King extends Base {
                 canMove = false;
             }
 
-            let rookPosition = xDirection === 1 ? Pos.oneDim(7, Pos.y(this.position)) : Pos.oneDim(0, (this.position)); //grid_size??
+            let rookPosition = xDirection === 1 ? Pos.oneDim(7, Pos.y(this.position)) : Pos.oneDim(0, Pos.y(this.position)); //grid_size??
             if (!map.friendly(this.color).get(rookPosition)
                 || map.friendly(this.color).get(rookPosition).firstStep !== null
                 || this.hasObstructionByWay(rookPosition, map)
@@ -43,12 +43,10 @@ module.exports = class King extends Base {
             let xDirection = this.direction('x', after);
             let rookPosition = xDirection === 1 ? Pos.oneDim(7, Pos.y(this.position)) : Pos.oneDim(0, Pos.y(this.position));
 
-            map.movePiece(rookPosition, this.position + xDirection, step);
-            map.movePiece(this.position, after, step);
-        } else {
-            super.doMove(after, map, step);
+            let rook = map.get(rookPosition);
+            rook.doMove(this.position + xDirection, map, step);
         }
 
-
+        super.doMove(after, map, step);
     }
 }

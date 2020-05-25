@@ -1,74 +1,45 @@
-const http = require('http');
-const fs = require('fs');
+const express = require('express');
+const app = express();
+const cookieParser = require('cookie-parser');
+app.use(cookieParser()); //обойдусь без опций
 
-let PieceMap = require('./pieceMap');
+const port = 8080;
+
+app.use('/', express.static(__dirname + '/../dist'));
+app.use(express.json());
 
 
-const urlHTML = './dist/index.html';
-const urlCSS = './dist/main.css';
-const urlJS = './dist/main.js';
-
-let step = 0;
+let PieceMap = require('./play/pieceMap');
 let map = new PieceMap;
 map.fillFromStarterPack();
-let latestChanges; //TODO
+let users = [];
+let step = {current: 0}; //объект для передачи по ссылке. Есть варик получше?
 
-let server = http.createServer((req, res) => {
+app.get('/json', (req, res) => {
+    res.send(map.toJSON(step.current));
+})
+app.post('/json', (req, res) => {
+    let data  = req.body;
 
-    if (req.method === 'GET') {
-        onGET(req, res);
-    } else if (req.method === 'POST') {
-        onPOST(req, res, map, step);
+    if (!req.cookies.userID) {
+        let tempID = Math.ceil(Math.random() * 1000);
+        res.cookie('userID', tempID);
+        users.push(tempID); //todo не работает
+
     }
+
+    if (map.isMoveAvailable(req.body, step.current)) {
+        map.makeMove(data.before, data.after, map, step.current, data.targetType);
+        step.current++;
+        if(map.has(16))
+            console.log(map.get(16).firstStep);
+        console.log(step.current);
+
+    }
+    res.send(map.toJSON(step.current));
+})
+
+
+app.listen(port, function () {
+    console.log('серв работает');
 });
-
-
-server.listen(8080, 'localhost', () => console.log("Серв работает"));
-
-
-function onGET(req, res) {
-    switch (req.url) {
-        case '/' :
-            res.writeHead(200, {'Content-Type': 'text/html'});
-            res.end(fs.readFileSync(urlHTML));
-            break;
-        case '/main.css' :
-            res.writeHead(200, {'Content-Type': 'text/css'});
-            res.end(fs.readFileSync(urlCSS));
-            break;
-        case '/main.js' :
-            res.writeHead(200, {'Content-Type': 'application/json'});
-            res.end(fs.readFileSync(urlJS));
-            break;
-        case '/grid':
-            res.writeHead(200, {'Content-Type': 'application/json'});
-            res.end(map.toJSON());
-            break;
-        case '/latestMove':
-            res.writeHead(200, {'Content-Type': 'application/json'});
-            res.end();
-            break;
-    }
-}
-
-function onPOST(req, res, map, step) {
-
-    function onPostEnd(tempData, map, res) {
-        res.writeHead(200);
-        if (map.isMoveAvailable(tempData)) {
-            map.makeMove(tempData.before, tempData.after, step);
-            step++;
-        }
-        res.end();
-    }
-
-    let tempData = '';
-    req.on('data', (data) => {
-        tempData += data;
-    });
-
-    req.on('end', () => onPostEnd(JSON.parse(tempData), map, res))
-    res.writeHead(200, {'Content-Type': 'application/json'});
-    res.end();
-
-}

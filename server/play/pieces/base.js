@@ -63,9 +63,11 @@ module.exports = class Base {
     }
 
     doMove(after, map, step) {
-        //TODO сохранение убитого для отображения сбоку
-        //TODO стоп, а я ща использую функцию вообще?
-        map.movePiece(this.position, after, step);
+        map.delete(after);
+        map.delete(this.position);
+        map.set(after, this);
+        this.position = after;
+        this.firstStep = step;
     }
 
     get firstStep() {
@@ -132,7 +134,6 @@ module.exports = class Base {
         let links = [];
 
         for (let i = 0; i < this._size ** 2; i++) {
-
             if (!map.friendly(this.color).has(i) && this.canMove(i, map, step)) {
                 if (map.willKingProtected(this.position, i, map, step)) {
                     links.push(i);

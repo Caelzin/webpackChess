@@ -24,7 +24,7 @@ module.exports = class Pawn extends Base {
                 if (!this.hasObstructionByWay(after + this._pieceDirection * this._size, map)) { //одиночный ход
                     canMove = true;
                 }
-            } //а с эти ифом шо делать? объединять?
+            }
 
         } else if (Math.abs(Pos.xSubtract(after, this.position)) === 1
             && Pos.ySubtract(after, this.position) * this.pieceDirection === 1) {
@@ -39,27 +39,35 @@ module.exports = class Pawn extends Base {
                 }
             }
         }
-
-
         return canMove;
     }
 
-    doMove(after, map, step) {
+    doMove(after, map, step, targetType) {
         if (Math.abs(Pos.xSubtract(after, this.position)) === 1 && !map.enemy(this.color).has(after)) {
             //=> на проходе
 
             map.delete(Pos.oneDimFrom(after, this.position));
-            map.movePiece(this.position, after, step);
+            super.doMove(after, map, step);
 
         } else {
-            return super.doMove(after, map, step);
+            super.doMove(after, map, step);
         }
 
-        if (this.color === 'white' && Pos.y(after) === this._size
-            || this.color === 'black' && Pos.y(after) === 0) {
-            //TODO выбор новой фигуры
+
+        if (this.pieceDirection === 1 && after === 7
+            || this.pieceDirection === -1 && after === 0) { //опять непорядок с жесткими цифрами, менять
+
+            if (targetType !== 'bishop' && targetType !== 'knight'
+                && targetType !== 'queen' && targetType !== 'rook') {
+                //TODO нужна проверка, пока забью
+            }
+
+            let newPiece = map.createPiece({type: targetType, position: this.position, color: this.color});
+            map.delete(this.position);
+            map.set(this.position, newPiece);
         }
     }
+
 
     get pieceDirection() {
         return this._pieceDirection;

@@ -29,9 +29,8 @@ module.exports = {
             '@src': path.resolve(__dirname, 'src')
         },
     },
-    // context: path.resolve(__dirname, 'src'),
     entry: {
-        main: './src/index.js',
+        'play': './src/js/pages/play.js',
     },
     output: {
         filename: filename('js'),
@@ -40,7 +39,9 @@ module.exports = {
     optimization: optimization(),
     plugins: [
         new HTMMWebpackPlugin({
-            template: './src/index.html',
+            filename: 'index.html',
+            template: './src/play.html',
+            chunks: ['play'],
             minify: {
                 collapseWhitespace: !isDev
             }
@@ -76,8 +77,5 @@ module.exports = {
                 }
             }
         ]
-    },
-    node: {
-        fs: 'empty'
     }
 };
