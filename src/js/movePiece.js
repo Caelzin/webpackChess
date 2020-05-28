@@ -1,6 +1,6 @@
 import * as highlight from './highlight';
+import DataHelper from "@src/js/dataHelper";
 import {getter, poster} from '@src/js/fetcher';
-import chooseTarget from '@src/js/chooseTarget';
 
 export default function movePiece(event, grid, jsonGrid) {
     let target = event.target.closest('.cell');
@@ -30,25 +30,9 @@ export default function movePiece(event, grid, jsonGrid) {
         let afterPosition = grid.getCellPosition(after);
 
         let before = grid.hasPiece(target, jsonGrid);
-        for (let j of before.moves) {
-            if (j === afterPosition) {
 
-                let data = {
-                    before: before.position,
-                    after: afterPosition,
-                }
-                if (before.type === 'pawn' && (afterPosition >=55 || afterPosition < 8)) {
-                    chooseTarget(before.color, data);
-                    break;
-                } else {
-                    poster(data);
-                    getter(grid);
-                    break;
-                }
+        DataHelper.sendData(before, afterPosition);
 
-
-            }
-        }
         this.removeEventListener('mouseup', mouseUp);
     })
 
