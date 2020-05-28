@@ -7,7 +7,8 @@
     "dev": "cross-env NODE_ENV=development webpack --mode development",
     "prod": "cross-env NODE_ENV=production webpack --mode production",
     "server": "node server/server.js",
-    "nodemon": "nodemon server/server.js"
+    "nodemon": "nodemon server/server.js",
+    "start": "node server/server.js"
   },
   "keywords": [
     "chess",
