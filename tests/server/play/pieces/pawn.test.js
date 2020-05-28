@@ -33,28 +33,27 @@ describe('There is a test for bug that was found', () => {
     map = new PieceMap();
     map.fillFromStarterPack();
 
+    let moves = [
+        {from: 8, to: 24},
+        {from: 49, to: 33},
+        {from: 24, to: 33},
+        {from: 57, to: 42},
+        {from: 33, to: 41},
+        {from: 42, to: 57},
+        {from: 41, to: 49},
+        {from: 57, to: 42},
+    ];
+    let step = 0;
+
+
     test('moving', () => {
-        map.delete(0);
-        map.delete(8);
-
-
-        map.get(1).doMove(18, map, 0);
-        map.get(48).doMove(32, map, 1);
-
-        map.get(18).doMove(1, map, 2);
-        map.get(32).doMove(24, map, 3);
-
-        map.get(1).doMove(18, map, 4);
-        map.get(24).doMove(16, map, 5);
-
-        map.get(18).doMove(1, map, 6);
-        map.get(16).doMove(8, map, 7);
-
-        map.get(1).doMove(18, map, 8);
-        map.get(8).doMove(0, map, 9);
+        for (let i of moves) {
+            map.get(i.from).doMove(i.to, map, step++)
+        }
+        map.get(49).doMove(57, map, step++, 'knight');
 
         let test = map.toJSON(9);
-        expect(map.has(8)).toBe(true);
+        expect(map.get(57).type).toBe('knight');
     })
 });
 

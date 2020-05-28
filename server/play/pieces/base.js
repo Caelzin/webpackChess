@@ -136,7 +136,7 @@ module.exports = class Base {
         for (let i = 0; i < this._size ** 2; i++) {
             if (!map.friendly(this.color).has(i) && this.canMove(i, map, step)) {
                 if (map.willKingProtected(this.position, i, map, step)) {
-                    links.push(i);
+                        links.push(i);
                 }
             }
         }

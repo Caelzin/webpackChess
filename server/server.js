@@ -12,29 +12,44 @@ app.use(express.json());
 let PieceMap = require('./play/pieceMap');
 let map = new PieceMap;
 map.fillFromStarterPack();
-let users = [];
+let player = {white: null, black: null};
 let step = {current: 0}; //объект для передачи по ссылке. Есть варик получше?
 
 app.get('/json', (req, res) => {
-    res.send(map.toJSON(step.current));
-})
-app.post('/json', (req, res) => {
-    let data  = req.body;
-
     if (!req.cookies.userID) {
         let tempID = Math.ceil(Math.random() * 1000);
         res.cookie('userID', tempID);
-        users.push(tempID); //todo не работает
-
     }
 
-    if (map.isMoveAvailable(req.body, step.current)) {
-        map.makeMove(data.before, data.after, map, step.current, data.targetType);
-        step.current++;
-        if(map.has(16))
-            console.log(map.get(16).firstStep);
-        console.log(step.current);
+    if (!player.white || !player.black) {
+        if (!player.white) {
+            player.white = req.cookies.userID;
+        } else {
+            if (player.white !== req.cookies.userID) {
+                player.black = req.cookies.userID;
+            }
+        }
+    }
 
+
+    if (req.cookies.userID === player.white) {
+        res.send(map.toJSON(step.current, 'white'));
+    } else if (req.cookies.userID === player.black) {
+        res.send(map.toJSON(step.current, 'black'));
+    } else {
+        res.send(map.toJSON(step.current, 'spectator'));
+    }
+
+
+})
+app.post('/json', (req, res) => {
+    let data = req.body;
+
+    if (map.isMoveAvailable(req.body, step.current)) {
+
+        map.makeMove(data.before, data.after, map, step.current, data.targetPiece);
+
+        step.current++;
     }
     res.send(map.toJSON(step.current));
 })

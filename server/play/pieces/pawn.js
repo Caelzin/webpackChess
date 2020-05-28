@@ -54,16 +54,17 @@ module.exports = class Pawn extends Base {
         }
 
 
-        if (this.pieceDirection === 1 && after === 7
-            || this.pieceDirection === -1 && after === 0) { //опять непорядок с жесткими цифрами, менять
+        if (this.pieceDirection === 1 && after > 55
+            || this.pieceDirection === -1 && after < 8) { //опять непорядок с жесткими цифрами, менять
 
             if (targetType !== 'bishop' && targetType !== 'knight'
                 && targetType !== 'queen' && targetType !== 'rook') {
                 //TODO нужна проверка, пока забью
             }
 
-            let newPiece = map.createPiece({type: targetType, position: this.position, color: this.color});
             map.delete(this.position);
+            let newPiece = map.createPiece({type: targetType, position: this.position, color: this.color});
+
             map.set(this.position, newPiece);
         }
     }

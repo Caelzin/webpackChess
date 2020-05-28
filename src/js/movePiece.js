@@ -29,23 +29,24 @@ export default function movePiece(event, grid, jsonGrid) {
         after = after.closest('.cell');
         let afterPosition = grid.getCellPosition(after);
 
-        let before = grid.hasPiece(target,  jsonGrid);
+        let before = grid.hasPiece(target, jsonGrid);
         for (let j of before.moves) {
             if (j === afterPosition) {
-
-                let targetType = null;
-                if (before.type === 'pawn' && (afterPosition >=55 || afterPosition >8)) {
-                    targetType = chooseTarget();
-                }
 
                 let data = {
                     before: before.position,
                     after: afterPosition,
-                    targetType: targetType,
                 }
-                poster(data);
-                getter(grid);
-                break;
+                if (before.type === 'pawn' && (afterPosition >=55 || afterPosition < 8)) {
+                    chooseTarget(before.color, data);
+                    break;
+                } else {
+                    poster(data);
+                    getter(grid);
+                    break;
+                }
+
+
             }
         }
         this.removeEventListener('mouseup', mouseUp);

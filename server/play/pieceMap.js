@@ -177,7 +177,7 @@ module.exports = class PieceMap extends Map {
      * @param {number}step
      * @return {string}
      */
-    toJSON(step) {
+    toJSON(step, filter) {
         let pieces = [];
         for (let piece of this.values()) {
             let object = {
@@ -194,14 +194,29 @@ module.exports = class PieceMap extends Map {
             pieces.push(object);
         }
 
+        if (filter) {
+            if (filter === 'white' || filter === 'black') {
+                for (let entry of pieces) {
+                    if (entry.color !== filter) {
+                        entry.moves = [];
+                    }
+                }
+            } else {
+                for (let entry of pieces) {
+                    entry.moves = [];
+                }
+            }
+
+        }
+
         return JSON.stringify(pieces);
     }
 
 
-    makeMove(before, after, map, step, transformType) {
+    makeMove(before, after, map, step, targetType) {
 
         let piece = this.get(before);
-        piece.doMove(after, map, step, transformType);
+        piece.doMove(after, map, step, targetType);
 
     }
 

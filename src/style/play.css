@@ -103,10 +103,13 @@
 }
 
 .popup-body {
+    z-index: 1000;
     width: calc(var(--default-size) * 40);
-    margin: calc(var(--default-size) * 45) auto;
+    top: calc(var(--default-size) * 45);
+    left: 50%;
     padding: var(--default-size);
     background-color: #eee;
+    position:absolute;
     display: flex;
     justify-content: space-around;
 }
