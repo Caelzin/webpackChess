@@ -43,7 +43,7 @@ module.exports = class PieceMap extends Map {
             {type: 'bishop', position: 61, color: 'black'},
             {type: 'queen', position: 59, color: 'black'},
             {type: 'king', position: 60, color: 'black'},
-        ];
+        ]; //TODO вынести как глобальную или лучше тратить память тут?
     }
 
     fillFromStarterPack() {
@@ -63,18 +63,10 @@ module.exports = class PieceMap extends Map {
         }
     }
 
-    /**
-     * Возвращает Map, содержащий все фигуры белого цвета
-     * @returns
-     */
     white() {
         return this.fromColor('white');
     }
 
-    /**
-     * Возвращает Map, содержащий все фигуры черного цвета
-     * @returns
-     */
     black() {
         return this.fromColor('black');
     }
@@ -95,25 +87,17 @@ module.exports = class PieceMap extends Map {
         }
     }
 
-
     findKingPosition(color) {
-        if (!color) {
-            for (let entry of this.friendly(this.color).values()) {
-                if (entry.type === 'king') {
-                    return entry.position;
-                }
-            }
-        } else {
-            for (let entry of this.friendly(color).values()) {
-                if (entry.type === 'king') {
-                    return entry.position;
-                }
+        let friendlyMap = !color ? this.friendly(this.color) : this.friendly(color);
+
+        for (let entry of friendlyMap.values()) {
+            if (entry.type === 'king') {
+                return entry.position;
             }
         }
-
     }
 
-    willKingProtected(before, after, map, step) {
+    willKingProtected(before, after, map, step) { //очему некоторые функции не определяются как изанные из других мест?
         let target = this.get(before);
 
         for (let i of this.enemy(target.color).keys()) {
@@ -172,11 +156,6 @@ module.exports = class PieceMap extends Map {
         return piece;
     }
 
-    /**
-     *
-     * @param {number}step
-     * @return {string}
-     */
     toJSON(step, filter) {
         let pieces = [];
         for (let piece of this.values()) {
@@ -188,8 +167,8 @@ module.exports = class PieceMap extends Map {
             }
             if (step % 2 === 1 && piece.color === 'white'
                 || step % 2 === 0 && piece.color === 'black') {
-                object.moves = [  ];
-            } //сервер отправляет подсветку ходов текущего человека. TODO еще и фильтр по человеку
+                object.moves = [];
+            }
 
             pieces.push(object);
         }

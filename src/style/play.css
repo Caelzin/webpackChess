@@ -75,15 +75,18 @@
    flex-basis: calc(100% / 18);
 }
 
+
 .cell {
     background: white var(--img-wood-light) center;
     flex-grow: 1;
 }
 
+
 .column:nth-child(even) > .cell:nth-child(odd),
 .column:nth-child(odd) > .cell:nth-child(even) {
      background: black var(--img-wood-dark) ;
 }
+
 
 .svg-piece {
     width: calc(var(--default-size) * 9);
@@ -91,7 +94,7 @@
 }
 
 
-.popup {
+.popup-back {
     z-index: 999;
     overflow:hidden;
     position:fixed;
@@ -101,6 +104,7 @@
     background-color: rgba(0,0,0,0.7);
 
 }
+
 
 .popup-body {
     z-index: 1000;
@@ -113,6 +117,7 @@
     display: flex;
     justify-content: space-around;
 }
+
 
 #movable-cell {
     position: absolute;

@@ -1,19 +1,19 @@
 const express = require('express');
-const app = express();
+const PieceMap = require('./play/pieceMap');
 const cookieParser = require('cookie-parser');
-app.use(cookieParser()); //обойдусь без опций
 
+const app = express();
+app.use(cookieParser());
 const port = 8080;
 
 app.use('/', express.static(__dirname + '/../dist'));
 app.use(express.json());
 
 
-let PieceMap = require('./play/pieceMap');
-let map = new PieceMap;
+const map = new PieceMap;
 map.fillFromStarterPack();
-let player = {white: null, black: null};
-let step = {current: 0}; //объект для передачи по ссылке. Есть варик получше?
+const player = {white: null, black: null};
+const step = {current: 0};
 
 app.get('/json', (req, res) => {
     if (!req.cookies.userID) {
@@ -21,16 +21,7 @@ app.get('/json', (req, res) => {
         res.cookie('userID', tempID);
     }
 
-    if (!player.white || !player.black) {
-        if (!player.white) {
-            player.white = req.cookies.userID;
-        } else {
-            if (player.white !== req.cookies.userID) {
-                player.black = req.cookies.userID;
-            }
-        }
-    }
-
+    fillPlayers(player, req);
 
     if (req.cookies.userID === player.white) {
         res.send(map.toJSON(step.current, 'white'));
@@ -46,9 +37,7 @@ app.post('/json', (req, res) => {
     let data = req.body;
 
     if (map.isMoveAvailable(req.body, step.current)) {
-
         map.makeMove(data.before, data.after, map, step.current, data.targetPiece);
-
         step.current++;
     }
     res.send(map.toJSON(step.current));
@@ -58,3 +47,15 @@ app.post('/json', (req, res) => {
 app.listen(port, function () {
     console.log('серв работает');
 });
+
+function fillPlayers(player, req) {
+    if (!player.white || !player.black) {
+        if (!player.white) {
+            player.white = req.cookies.userID;
+        } else {
+            if (player.white !== req.cookies.userID) {
+                player.black = req.cookies.userID;
+            }
+        }
+    }
+}

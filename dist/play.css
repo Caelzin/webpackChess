@@ -91,7 +91,7 @@
 }
 
 
-.popup {
+.popup-back {
     z-index: 999;
     overflow:hidden;
     position:fixed;

@@ -21,7 +21,7 @@ module.exports = class Pawn extends Base {
             if (Pos.ySubtract(after, this.position) * this.pieceDirection === 2 //двойной прыжок
                 && this.firstStep === null
                 || Pos.ySubtract(after, this.position) * this.pieceDirection === 1) {
-                if (!this.hasObstructionByWay(after + this._pieceDirection * this._size, map)) { //одиночный ход
+                if (!this.hasObstructionByWay(after + this._pieceDirection * this._size, map)) {
                     canMove = true;
                 }
             }
@@ -56,11 +56,6 @@ module.exports = class Pawn extends Base {
 
         if (this.pieceDirection === 1 && after > 55
             || this.pieceDirection === -1 && after < 8) { //опять непорядок с жесткими цифрами, менять
-
-            if (targetType !== 'bishop' && targetType !== 'knight'
-                && targetType !== 'queen' && targetType !== 'rook') {
-                //TODO нужна проверка, пока забью
-            }
 
             map.delete(this.position);
             let newPiece = map.createPiece({type: targetType, position: this.position, color: this.color});

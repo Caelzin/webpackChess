@@ -22,14 +22,10 @@ export default class dataHelper {
         }
     }
 
-    static createPopup (color) {
-        let popupBody = document.createElement('div');
-        popupBody.className = 'popup-body';
-        document.body.append(popupBody);
 
-        let popupBack = document.createElement('div');
-        popupBack.className = 'popup';
-        document.body.append(popupBack);
+    static createPopup(color) {
+        this.createPopupElement('popup-back');
+        let popup = this.createPopupElement('popup-body');
 
         let pieces = ['bishop', 'knight', 'queen', 'rook'];
         for (let type of pieces) {
@@ -39,7 +35,7 @@ export default class dataHelper {
 
             piece.innerHTML = SvgHelper.piecePicker(type, color);
 
-            popupBody.append(piece);
+            popup.append(piece);
         }
     }
 
@@ -53,19 +49,27 @@ export default class dataHelper {
                 return;
             }
 
-            closePopup();
             data.targetPiece = after.id;
+
+            closePopup();
 
             poster(data);
 
             function closePopup() { //TODO как-то вынести можно? как тогда передать?
-                for (let child of document.body.children) {
-                    if (child.className === 'popup-body' || child.className === 'popup') {
+                for (let child of document.body.childNodes) {
+                    if (child.className === 'popup-back' || child.className === 'popup-body') { //TODO не имею ни малейшего представления, почему вторая в очереди штука не работает
                         child.remove();
                     }
                 }
             }
         });
 
+    }
+
+    static createPopupElement(className) {
+        let newElement = document.createElement('div');
+        newElement.className = className;
+        document.body.append(newElement);
+        return newElement;
     }
 }
