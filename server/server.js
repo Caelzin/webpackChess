@@ -1,4 +1,5 @@
 const express = require('express');
+const endGameChecker = require('./play/endGameChecker');
 const PieceMap = require('./play/pieceMap');
 const cookieParser = require('cookie-parser');
 
@@ -8,7 +9,6 @@ const port = 8080;
 
 app.use('/', express.static(__dirname + '/../dist'));
 app.use(express.json());
-
 
 const map = new PieceMap;
 map.fillFromStarterPack();
@@ -31,7 +31,6 @@ app.get('/json', (req, res) => {
         res.send(map.toJSON(step.current, 'spectator'));
     }
 
-
 })
 app.post('/json', (req, res) => {
     let data = req.body;
@@ -40,7 +39,15 @@ app.post('/json', (req, res) => {
         map.makeMove(data.before, data.after, map, step.current, data.targetPiece);
         step.current++;
     }
-    res.send(map.toJSON(step.current));
+
+    let json = map.toJSON(step.current);
+    let color = req.cookies.userID === player.white ? 'white' : 'black';
+    if (endGameChecker.ifMate(json, color) || endGameChecker.ifMate(json, color)) {
+        res.send('Game ended');
+    } else {
+        res.send(json);
+    }
+
 })
 
 
