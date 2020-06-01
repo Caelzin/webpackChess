@@ -14,6 +14,7 @@ const map = new PieceMap;
 map.fillFromStarterPack();
 const player = {white: null, black: null};
 const step = {current: 0};
+const game = {ended: false};
 
 app.get('/json', (req, res) => {
     if (!req.cookies.userID) {
@@ -23,13 +24,18 @@ app.get('/json', (req, res) => {
 
     fillPlayers(player, req);
 
-    if (req.cookies.userID === player.white) {
-        res.send(map.toJSON(step.current, 'white'));
-    } else if (req.cookies.userID === player.black) {
-        res.send(map.toJSON(step.current, 'black'));
+    if (game.ended === true) {
+        res.send('Game ended');
     } else {
-        res.send(map.toJSON(step.current, 'spectator'));
+        if (req.cookies.userID === player.white) {
+            res.send(map.toJSON(step.current, 'white'));
+        } else if (req.cookies.userID === player.black) {
+            res.send(map.toJSON(step.current, 'black'));
+        } else {
+            res.send(map.toJSON(step.current, 'spectator'));
+        }
     }
+
 
 })
 app.post('/json', (req, res) => {
@@ -42,10 +48,13 @@ app.post('/json', (req, res) => {
 
     let json = map.toJSON(step.current);
     let color = req.cookies.userID === player.white ? 'white' : 'black';
-    if (endGameChecker.ifMate(json, color) || endGameChecker.ifMate(json, color)) {
-        res.send('Game ended');
-    } else {
-        res.send(json);
+
+    if (endGameChecker.ifMate(json, color) || endGameChecker.ifPat(json, color)) {
+        game.ended = true;
+
+        if (game.ended === false) {
+            res.send(json)
+        }
     }
 
 })

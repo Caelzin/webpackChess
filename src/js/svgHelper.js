@@ -33,7 +33,7 @@ export default class SvgHelper {
         return this.colorPicker(svgString, color);
     }
 
-    static colorPicker (svgString, color) {
+    static colorPicker(svgString, color) {
         if (color === 'white') {
             svgString = svgString.replace('black', 'white');
         }

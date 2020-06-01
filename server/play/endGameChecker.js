@@ -1,6 +1,9 @@
 module.exports = class EndGameChecker {
 
     static ifMate (json, color) {
+        console.log(this.canMove(json, color) + ' canMOve');
+        console.log(this.isKingUnderAttack(json, color) + ' kingAttacked');
+
         return !this.canMove(json, color) && this.isKingUnderAttack(json, color);
     }
 

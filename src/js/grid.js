@@ -86,7 +86,7 @@ export default class Grid extends Map {
         }
     }
 
-    hasPiece (targetCell, jsonGrid) {
+    hasPiece(targetCell, jsonGrid) {
         if (!targetCell || targetCell.className !== 'cell') {
             return false;
         }

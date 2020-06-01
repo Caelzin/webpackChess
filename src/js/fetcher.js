@@ -11,7 +11,7 @@ async function getter(grid) {
     grid.draw(jsonGrid);
     parent.onmouseover = (event) => highlight.add(event, grid, jsonGrid);
     parent.onmousedown = (event) => movePiece(event, grid, jsonGrid);
-    return  jsonGrid;
+    return jsonGrid;
 }
 
 function poster(data) {

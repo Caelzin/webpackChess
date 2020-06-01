@@ -3,7 +3,7 @@ import SvgHelper from "@src/js/svgHelper";
 
 export default class dataHelper {
 
-    static sendData(piece, after) {
+    static sendData(piece, after, grid) {
         for (let j of piece.moves) {
             if (j === after) {
                 let data = {
@@ -16,27 +16,18 @@ export default class dataHelper {
                     break;
                 } else {
                     poster(data);
+                    getter(grid);
                     break;
                 }
             }
         }
     }
 
-
     static createPopup(color) {
         this.createPopupElement('popup-back');
         let popup = this.createPopupElement('popup-body');
 
-        let pieces = ['bishop', 'knight', 'queen', 'rook'];
-        for (let type of pieces) {
-            let piece = document.createElement('div');
-            piece.id = type;
-            piece.className = 'targetPiece';
-
-            piece.innerHTML = SvgHelper.piecePicker(type, color);
-
-            popup.append(piece);
-        }
+        this.createPopupPieces(popup, color);
     }
 
     static chooseTarget(color, data) {
@@ -55,12 +46,11 @@ export default class dataHelper {
 
             poster(data);
 
-            function closePopup() { //TODO как-то вынести можно? как тогда передать?
-                for (let child of document.body.childNodes) {
-                    if (child.className === 'popup-back' || child.className === 'popup-body') { //TODO не имею ни малейшего представления, почему вторая в очереди штука не работает
-                        child.remove();
-                    }
-                }
+            function closePopup() {
+                let popup = document.querySelector('.popup-back');
+                popup.remove();
+                popup = document.querySelector('.popup-body');
+                popup.remove();
             }
         });
 
@@ -71,5 +61,18 @@ export default class dataHelper {
         newElement.className = className;
         document.body.append(newElement);
         return newElement;
+    }
+
+    static createPopupPieces(parent, color) {
+        let pieces = ['bishop', 'knight', 'queen', 'rook'];
+        for (let type of pieces) {
+            let piece = document.createElement('div');
+            piece.id = type;
+            piece.className = 'targetPiece';
+
+            piece.innerHTML = SvgHelper.piecePicker(type, color);
+
+            parent.append(piece);
+        }
     }
 }
