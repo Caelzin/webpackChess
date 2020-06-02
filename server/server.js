@@ -1,11 +1,11 @@
 const express = require('express');
-const endGameChecker = require('./play/endGameChecker');
+const EndGameChecker = require('./play/endGameChecker');
 const PieceMap = require('./play/pieceMap');
 const cookieParser = require('cookie-parser');
 
 const app = express();
 app.use(cookieParser());
-const port = 8080;
+const $PORT = 8080;
 
 app.use('/', express.static(__dirname + '/../dist'));
 app.use(express.json());
@@ -41,28 +41,22 @@ app.get('/json', (req, res) => {
 app.post('/json', (req, res) => {
     let data = req.body;
 
-    if (map.isMoveAvailable(req.body, step.current)) {
+    let color = req.cookies.userID === player.white ? 'white' : 'black';
+
+    console.log();
+    console.log(EndGameChecker.ifMate(map.toJSON(step.current), color));
+    console.log(EndGameChecker.ifPat(map.toJSON(step.current), color));
+
+    if (EndGameChecker.ifMate(map.toJSON(step.current), color) || EndGameChecker.ifPat(map.toJSON(step.current), color)) {
+        game.ended = true;
+    } else if (map.isMoveAvailable(req.body, step.current) && game.ended === false) {
         map.makeMove(data.before, data.after, map, step.current, data.targetPiece);
         step.current++;
     }
-
-    let json = map.toJSON(step.current);
-    let color = req.cookies.userID === player.white ? 'white' : 'black';
-
-    if (endGameChecker.ifMate(json, color) || endGameChecker.ifPat(json, color)) {
-        game.ended = true;
-
-        if (game.ended === false) {
-            res.send(json)
-        }
-    }
-
 })
 
 
-app.listen(port, function () {
-    console.log('серв работает');
-});
+app.listen();
 
 function fillPlayers(player, req) {
     if (!player.white || !player.black) {

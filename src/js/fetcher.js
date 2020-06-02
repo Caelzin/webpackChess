@@ -7,8 +7,8 @@ async function getter(grid) {
     let response = await fetch('http://localhost:8080/json', {
         method: 'GET'
     });
-    let jsonGrid = await response.json();
-    grid.draw(jsonGrid);
+    let jsonGrid = await response.json()
+        .then(grid.draw(jsonGrid)); //плаваю в асинхроне
     parent.onmouseover = (event) => highlight.add(event, grid, jsonGrid);
     parent.onmousedown = (event) => movePiece(event, grid, jsonGrid);
     return jsonGrid;
