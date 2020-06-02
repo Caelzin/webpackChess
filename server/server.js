@@ -5,7 +5,6 @@ const cookieParser = require('cookie-parser');
 
 const app = express();
 app.use(cookieParser());
-const $PORT = 8080;
 
 app.use('/', express.static(__dirname + '/../dist'));
 app.use(express.json());
@@ -56,7 +55,7 @@ app.post('/json', (req, res) => {
 })
 
 
-app.listen();
+app.listen(process.env.PORT || 5000);
 
 function fillPlayers(player, req) {
     if (!player.white || !player.black) {
