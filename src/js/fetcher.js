@@ -4,18 +4,18 @@ import movePiece from "@src/js/movePiece";
 export {getter, poster};
 
 async function getter(grid) {
-    let response = await fetch('http://localhost:8080/json', {
+    let response = await fetch('/json', {
         method: 'GET'
     });
     let jsonGrid = await response.json()
-        .then(grid.draw(jsonGrid)); //плаваю в асинхроне
+    grid.draw(jsonGrid);
     parent.onmouseover = (event) => highlight.add(event, grid, jsonGrid);
     parent.onmousedown = (event) => movePiece(event, grid, jsonGrid);
     return jsonGrid;
 }
 
 function poster(data) {
-    fetch('http://localhost:8080/json',
+    fetch('/json',
         {
             method: 'POST',
             headers: {
