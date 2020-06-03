@@ -26,35 +26,4 @@ describe('CanMove function', () => {
     })
 });
 
-describe('There is a test for bug that was found', () => {
-
-    let map;
-
-    map = new PieceMap();
-    map.fillFromStarterPack();
-
-    let moves = [
-        {from: 8, to: 24},
-        {from: 49, to: 33},
-        {from: 24, to: 33},
-        {from: 57, to: 42},
-        {from: 33, to: 41},
-        {from: 42, to: 57},
-        {from: 41, to: 49},
-        {from: 57, to: 42},
-    ];
-    let step = 0;
-
-
-    test('moving', () => {
-        for (let i of moves) {
-            map.get(i.from).doMove(i.to, map, step++)
-        }
-        map.get(49).doMove(57, map, step++, 'knight');
-
-        let test = map.toJSON(9);
-        expect(map.get(57).type).toBe('knight');
-    })
-});
-
 

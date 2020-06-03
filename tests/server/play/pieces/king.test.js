@@ -52,7 +52,6 @@ describe('Moved one cell left', () => {
 });
 
 describe('left castling', () => {
-
     beforeEach(() => {
         king.doMove(Pos.oneDim(2, 0), map, 0);
     })
