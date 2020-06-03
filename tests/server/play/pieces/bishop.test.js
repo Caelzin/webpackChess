@@ -1,1 +1,0 @@
-import Bishop from '../../../../server/play/pieces/bishop';

@@ -1,5 +1,7 @@
 module.exports = class EndGameChecker {
 
+    //класс нигде не используется. Не успела написать завершение хода.
+
     static ifMate (json, color) {
         return !this.canMove(JSON.parse(json), color) && this.isKingUnderAttack(JSON.parse(json), color);
     }

@@ -42,16 +42,8 @@ app.post('/json', (req, res) => {
 
     let color = req.cookies.userID === player.white ? 'white' : 'black';
 
-    console.log();
-    console.log(EndGameChecker.ifMate(map.toJSON(step.current), color));
-    console.log(EndGameChecker.ifPat(map.toJSON(step.current), color));
-
-    if (EndGameChecker.ifMate(map.toJSON(step.current), color) || EndGameChecker.ifPat(map.toJSON(step.current), color)) {
-        game.ended = true;
-    } else if (map.isMoveAvailable(req.body, step.current) && game.ended === false) {
-        map.makeMove(data.before, data.after, map, step.current, data.targetPiece);
-        step.current++;
-    }
+    map.makeMove(data.before, data.after, map, step.current, data.targetPiece);
+    step.current++;
 })
 
 
