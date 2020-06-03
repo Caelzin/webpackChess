@@ -13,12 +13,24 @@
 @media (orientation: landscape) {
     :root {
         --default-size: 1vh;
+        --additional-size: 1vw;
+    }
+
+    #restart-button {
+        left: calc(var(--additional-size) * 50 + var(--default-size) * 50);
+        top: 0;
     }
 }
 
 @media (orientation: portrait) {
     :root {
         --default-size: 1vw;
+        --additional-size: 1vh;
+    }
+
+    #restart-button {
+        left: 0;
+        top: calc(var(--default-size) * 100);
     }
 }
 
@@ -123,4 +135,11 @@
     position: absolute;
     background-color: transparent;
     z-index: 500; /*mazZIndex?*/
+}
+
+#restart-button {
+    position: absolute;
+    height: calc(var(--default-size) * 4);
+    width: calc(var(--default-size) * 14);
+    font-size: calc(var(--default-size) * 2);
 }

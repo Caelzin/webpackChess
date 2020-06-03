@@ -1,7 +1,7 @@
 import * as highlight from '@src/js/highlight';
 import movePiece from "@src/js/movePiece";
 
-export {getter, poster};
+export {getter, poster, askRestart};
 
 async function getter(grid) {
     let response = await fetch('/json', {
@@ -22,5 +22,16 @@ function poster(data) {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(data)
+        })
+}
+
+function askRestart() {
+    fetch('/restart',
+        {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'text/plain'
+            },
+            body: 'restart'
         })
 }

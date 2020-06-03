@@ -47,6 +47,9 @@ module.exports = class PieceMap extends Map {
     }
 
     fillFromStarterPack() {
+        for (let i of this.keys()) {
+             this.delete(i);
+        }
         for (let i of this._starterPack) {
             this.set(i.position, this.createPiece(i));
         }

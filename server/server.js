@@ -9,23 +9,28 @@ app.use(cookieParser());
 app.use('/', express.static(__dirname + '/../dist'));
 app.use(express.json());
 
-const map = new PieceMap;
+let map = new PieceMap;
 map.fillFromStarterPack();
 const player = {white: null, black: null};
 const step = {current: 0};
-const game = {ended: false};
+
+app.post('/restart', (req, res) => {
+    map.fillFromStarterPack();
+    player.white = null;
+    player.black = null;
+    step.current = 0;
+    res.send('restarted');
+})
 
 app.get('/json', (req, res) => {
-    if (!req.cookies.userID) {
-        let tempID = Math.ceil(Math.random() * 1000);
-        res.cookie('userID', tempID);
-    }
+        if (!req.cookies.userID) {
+            let tempID = Math.ceil(Math.random() * 1000);
+            res.cookie('userID', tempID);
+        }
 
-    fillPlayers(player, req);
+        fillPlayers(player, req);
 
-    if (game.ended === true) {
-        res.send('Game ended');
-    } else {
+
         if (req.cookies.userID === player.white) {
             res.send(map.toJSON(step.current, 'white'));
         } else if (req.cookies.userID === player.black) {
@@ -34,13 +39,9 @@ app.get('/json', (req, res) => {
             res.send(map.toJSON(step.current, 'spectator'));
         }
     }
-
-
-})
+)
 app.post('/json', (req, res) => {
     let data = req.body;
-
-    let color = req.cookies.userID === player.white ? 'white' : 'black';
 
     map.makeMove(data.before, data.after, map, step.current, data.targetPiece);
     step.current++;
