@@ -43,7 +43,7 @@ module.exports = class PieceMap extends Map {
             {type: 'bishop', position: 61, color: 'black'},
             {type: 'queen', position: 59, color: 'black'},
             {type: 'king', position: 60, color: 'black'},
-        ]; //TODO вынести как глобальную или лучше тратить память тут?
+        ];
     }
 
     fillFromStarterPack() {
@@ -91,16 +91,16 @@ module.exports = class PieceMap extends Map {
     }
 
     findKingPosition(color) {
-        let friendlyMap = !color ? this.friendly(this.color) : this.friendly(color);
-
-        for (let entry of friendlyMap.values()) {
-            if (entry.type === 'king') {
-                return entry.position;
+        if (color && this.friendly(color)) {
+            for (let entry of this.friendly(color).values()) {
+                if (entry.type === 'king') {
+                    return entry.position;
+                }
             }
         }
     }
 
-    willKingProtected(before, after, map, step) { //очему некоторые функции не определяются как изанные из других мест?
+    willKingProtected(before, after, map, step) { //почему некоторые функции не определяются как изанные из других мест?
         let target = this.get(before);
 
         for (let i of this.enemy(target.color).keys()) {
